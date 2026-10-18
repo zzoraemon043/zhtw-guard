@@ -6,3 +6,6 @@ export { fixText, type FixResult } from "./engine/fix-text.js";
 export { defaultSettings, type CheckSettings } from "./engine/settings.js";
 export { defaultTermTable, withExtraTerms, type ExtraTerms } from "./dictionary/term-table.js";
 export { ALL_RULES } from "./rules/index.js";
+export { loadProjectContext, type ProjectContext } from "./project/context.js";
+export { validateConfig, type ProjectConfig } from "./config/validate-config.js";
+export { ConfigError } from "./config/config-error.js";

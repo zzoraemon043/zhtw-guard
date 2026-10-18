@@ -1,5 +1,6 @@
 import { MissingPathError } from "../files/collect-files.js";
-import { defaultProjectContext } from "../project/context.js";
+import { ConfigError } from "../config/config-error.js";
+import { loadProjectContext } from "../project/context.js";
 import { VERSION } from "../version.js";
 import { parseCliArgs, type ParsedArgs } from "./args.js";
 import { checkFiles } from "./commands/check-files.js";
@@ -13,7 +14,7 @@ async function dispatch(args: ParsedArgs, io: CliIo): Promise<number> {
     io.stdout(args.command === "help" ? HELP_TEXT : `${VERSION}\n`);
     return EXIT_CLEAN;
   }
-  const project = defaultProjectContext(io.cwd);
+  const project = await loadProjectContext(io.cwd, args.configPath);
   if (args.command === "text") {
     return checkStdin(args, project, io);
   }
@@ -25,7 +26,7 @@ export async function runCli(argv: readonly string[], io: CliIo): Promise<number
   try {
     return await dispatch(parseCliArgs(argv), io);
   } catch (error) {
-    if (error instanceof UsageError || error instanceof MissingPathError) {
+    if (error instanceof UsageError || error instanceof MissingPathError || error instanceof ConfigError) {
       io.stderr(`zhtw-guard: ${error.message}\n`);
       if (error instanceof UsageError) {
         io.stderr("Run zhtw-guard --help for usage.\n");

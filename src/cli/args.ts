@@ -11,12 +11,14 @@ export interface ParsedArgs {
   command: Command | "help" | "version";
   paths: string[];
   format: OutputFormat;
+  configPath?: string;
   filePath?: string;
   fix: boolean;
 }
 
 const OPTIONS = {
   format: { type: "string" },
+  config: { type: "string" },
   path: { type: "string" },
   fix: { type: "boolean" },
   help: { type: "boolean", short: "h" },
@@ -72,6 +74,7 @@ export function parseCliArgs(argv: readonly string[]): ParsedArgs {
     paths,
     format,
     fix: values.fix === true,
+    ...(values.config === undefined ? {} : { configPath: values.config }),
     ...(values.path === undefined ? {} : { filePath: values.path })
   };
 }

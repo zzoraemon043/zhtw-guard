@@ -1,6 +1,7 @@
 import { ALL_RULES } from "../rules/index.js";
 import type { Finding, Rule, Severity } from "../types.js";
 import type { CheckSettings } from "./settings.js";
+import { createSuppressionFilter } from "./suppressions.js";
 
 export interface TextTarget {
   text: string;
@@ -21,11 +22,12 @@ export function enabledRules(settings: CheckSettings): Array<{ rule: Rule; sever
 }
 
 export function runRule(rule: Rule, target: TextTarget, settings: CheckSettings): Finding[] {
-  return rule.check({
+  const findings = rule.check({
     text: target.text,
     terms: settings.terms,
     ...(target.filePath === undefined ? {} : { path: target.filePath })
   });
+  return findings.length === 0 ? findings : findings.filter(createSuppressionFilter(target.text, settings.allow));
 }
 
 export function runEnabledRules(target: TextTarget, settings: CheckSettings): RuleFinding[] {
