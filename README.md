@@ -105,7 +105,7 @@ const sample = "简体示例"; // zhtw-guard-ignore
 ### 規劃中的功能
 
 - GitHub Action：在 Pull Request 上標出問題行
-- AI 代理 hook：支援 Claude Code、Codex、Gemini CLI 等工具，檢查回覆與寫入的檔案
+- AI 代理 hook：支援主流 AI 寫程式工具，檢查回覆與寫入的檔案
 - `reply-language` 規則：檢查 AI 代理的回覆是不是以繁體中文開頭
 
 ### 開發
@@ -223,7 +223,7 @@ The character and term tables start from [OpenCC](https://github.com/BYVoid/Open
 ### Planned features
 
 - GitHub Action that annotates problem lines on pull requests
-- Hooks for AI coding agents such as Claude Code, Codex and Gemini CLI
+- Hooks for popular AI coding agents
 - `reply-language` rule that checks whether an agent reply starts in Traditional Chinese
 
 ### Development
