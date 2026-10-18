@@ -6,13 +6,17 @@ import { parseCliArgs, type ParsedArgs } from "./args.js";
 import { checkFiles } from "./commands/check-files.js";
 import { checkStdin } from "./commands/check-stdin.js";
 import { fixFiles } from "./commands/fix-files.js";
+import { runHook } from "./commands/hook.js";
 import { HELP_TEXT } from "./help.js";
-import { EXIT_CLEAN, EXIT_USAGE, UsageError, type CliIo } from "./io.js";
+import { EXIT_CLEAN, EXIT_HOOK_ERROR, EXIT_USAGE, UsageError, type CliIo } from "./io.js";
 
 async function dispatch(args: ParsedArgs, io: CliIo): Promise<number> {
   if (args.command === "help" || args.command === "version") {
     io.stdout(args.command === "help" ? HELP_TEXT : `${VERSION}\n`);
     return EXIT_CLEAN;
+  }
+  if (args.command === "hook") {
+    return runHook(args, io);
   }
   const project = await loadProjectContext(io.cwd, args.configPath, args.strictness);
   if (args.command === "text") {
@@ -31,7 +35,7 @@ export async function runCli(argv: readonly string[], io: CliIo): Promise<number
       if (error instanceof UsageError) {
         io.stderr("Run zhtw-guard --help for usage.\n");
       }
-      return EXIT_USAGE;
+      return argv[0] === "hook" ? EXIT_HOOK_ERROR : EXIT_USAGE;
     }
     throw error;
   }
