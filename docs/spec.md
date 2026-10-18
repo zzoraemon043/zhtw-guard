@@ -8,10 +8,10 @@ Detect and fix text that breaks Traditional Chinese (Taiwan) conventions, for hu
 
 | ID | Group | Example | Auto fix |
 | --- | --- | --- | --- |
-| `simplified-char` | Simplified character in Traditional text | 设定 to 設定 | Yes, when the mapping is one to one |
-| `mainland-term` | Mainland China vocabulary | 軟件 to 軟體, 默認 to 預設 | Yes, from the phrase table |
-| `ambiguous-char` | Character with several Traditional forms | 发 to 發 or 髮 | No, report only |
-| `mojibake` | Text that looks like cp950 or UTF-8 decoding damage | 銝剜 | No, report only |
+| `simplified-char` | Simplified character in Traditional text | 设定 to 設定 | Yes, when the mapping is one to one | <!-- zhtw-guard-ignore -->
+| `mainland-term` | Mainland China vocabulary | 軟件 to 軟體, 默認 to 預設 | Yes, from the phrase table | <!-- zhtw-guard-ignore -->
+| `ambiguous-char` | Character with several Traditional forms | 发 to 發 or 髮 | No, report only | <!-- zhtw-guard-ignore -->
+| `mojibake` | Text that looks like cp950 or UTF-8 decoding damage | 銝剜 | No, report only | <!-- zhtw-guard-ignore -->
 | `ps1-bom` | `.ps1` file without a UTF-8 BOM that contains non-ASCII text | | Yes |
 | `line-ending` | Mixed CRLF and LF in one file | | Yes |
 | `reply-language` | Agent reply whose first sentence is not Traditional Chinese | | No, block or warn |
