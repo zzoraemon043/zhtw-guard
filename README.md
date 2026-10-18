@@ -44,11 +44,15 @@ echo "请安装软件" | npx zhtw-guard text --fix    # 輸出修正後的文字
 | 選項 | 說明 |
 | --- | --- |
 | `--format json` | 改用 JSON 輸出，方便給其他工具或 CI 使用 |
+| `--format github` | 輸出 GitHub Actions 的 workflow commands，在檔案行上標註問題 |
+| `--strictness <default\|strict>` | 覆寫設定檔的用語嚴格度 |
+| `--fail-on <error\|warning>` | 設為 `warning` 時，警告也會讓結束代碼變成 `1` |
 | `--config <檔案>` | 指定設定檔，不自動尋找 `zhtw-guard.config.json` |
 | `--path <檔名>` | 只用於 `text`：指定檔名，讓 `ps1-bom` 這類依副檔名判斷的規則生效 |
 | `--fix` | 只用於 `text`：輸出修正後的文字，剩下的問題寫到標準錯誤 |
+| `--reply` | 只用於 `text`：把輸入當成 AI 代理的回覆，額外檢查第一句是不是繁體中文 |
 
-結束代碼：`0` 沒有錯誤，`1` 發現錯誤，`2` 指令用法或設定檔有誤。設為 `warning` 的規則只會回報，不會讓結束代碼變成 `1`。
+結束代碼：`0` 沒有錯誤，`1` 發現錯誤，`2` 指令用法或設定檔有誤。設為 `warning` 的規則只會回報，除非加上 `--fail-on warning`，否則不會讓結束代碼變成 `1`。`hook` 指令的結束代碼另有約定，請見下方說明。
 
 ### 規則
 
@@ -60,6 +64,7 @@ echo "请安装软件" | npx zhtw-guard text --fix    # 輸出修正後的文字
 | `mojibake` | 疑似 cp950 或 UTF-8 解碼錯誤造成的亂碼 | 不修正，只回報 |
 | `ps1-bom` | 含有非 ASCII 文字、但沒有 UTF-8 BOM 的 `.ps1` 檔案 | 加上 BOM |
 | `line-ending` | 同一個檔案混用 CRLF 與 LF | 統一成較多的那一種 |
+| `reply-language` | AI 代理回覆的第一句不是繁體中文（英文、簡體中文或日文）。只在 `text --reply` 與 `hook` 檢查回覆時啟用 | 不修正，只回報 |
 
 `fix` 不會改寫不是有效 UTF-8 的檔案，以免損壞原本的內容。
 
@@ -109,6 +114,16 @@ const sample = "简体示例"; // zhtw-guard-ignore
 
 在 Markdown 裡可以寫成 `<!-- zhtw-guard-ignore -->`，畫面上不會顯示。
 
+### AI 代理 hook
+
+`zhtw-guard hook` 從標準輸入讀取 AI 代理的 hook 事件 JSON，檢查回覆文字或剛寫入的檔案。沒有問題時結束代碼為 `0` 且沒有輸出；有問題時結束代碼為 `2`，問題寫到標準錯誤，讓 AI 代理自行修正。欄位名稱可以用 `--text-field`、`--path-field` 設定。設定方式與範例請見 [docs/hooks.md](docs/hooks.md)。
+
+要單獨檢查一段回覆，也可以用 `text --reply`，它會額外確認第一句是繁體中文：
+
+```sh
+echo "好的，我來修改。" | npx zhtw-guard text --reply
+```
+
 ### 詞庫來源
 
 字表與用語表以 [OpenCC](https://github.com/BYVoid/OpenCC)（Apache-2.0）的資料為基礎，授權檔與出處說明放在 [`data/`](data/README.md)。台灣用語表 `data/tw-terms.json` 由本專案維護，每一筆都有測試。
@@ -116,8 +131,6 @@ const sample = "简体示例"; // zhtw-guard-ignore
 ### 規劃中的功能
 
 - GitHub Action：在 Pull Request 上標出問題行
-- AI 代理 hook：支援主流 AI 寫程式工具，檢查回覆與寫入的檔案
-- `reply-language` 規則：檢查 AI 代理的回覆是不是以繁體中文開頭
 
 ### 開發
 
@@ -173,11 +186,15 @@ Each problem is printed on one line as `path:line:column rule message -> suggest
 | Option | Description |
 | --- | --- |
 | `--format json` | Print JSON for other tools and CI |
+| `--format github` | Print GitHub Actions workflow commands that annotate problem lines |
+| `--strictness <default\|strict>` | Override the term strictness from the config file |
+| `--fail-on <error\|warning>` | With `warning`, warnings also change the exit code to `1` |
 | `--config <file>` | Use this config file instead of searching for `zhtw-guard.config.json` |
 | `--path <name>` | `text` only: file name for rules that depend on it, such as `ps1-bom` |
 | `--fix` | `text` only: print the fixed text and write remaining problems to standard error |
+| `--reply` | `text` only: treat the input as an AI agent reply and also check that the first sentence is Traditional Chinese |
 
-Exit codes: `0` no errors, `1` errors found, `2` usage or configuration error. Rules set to `warning` are reported but do not change the exit code to `1`.
+Exit codes: `0` no errors, `1` errors found, `2` usage or configuration error. Rules set to `warning` are reported but do not change the exit code to `1` unless you pass `--fail-on warning`. The `hook` command uses its own exit codes, described below.
 
 ### Rules
 
@@ -189,6 +206,7 @@ Exit codes: `0` no errors, `1` errors found, `2` usage or configuration error. R
 | `mojibake` | Text that looks like cp950 or UTF-8 decoding damage | No, report only |
 | `ps1-bom` | `.ps1` files with non-ASCII text and no UTF-8 BOM | Adds the BOM |
 | `line-ending` | Mixed CRLF and LF in one file | Converts to the more common one |
+| `reply-language` | An AI agent reply whose first sentence is not Traditional Chinese (English, Simplified Chinese or Japanese). Only runs for `text --reply` and for replies in `hook` | No, report only |
 
 `fix` never rewrites a file that is not valid UTF-8, so the original bytes are not damaged.
 
@@ -238,6 +256,16 @@ const sample = "简体示例"; // zhtw-guard-ignore
 
 In Markdown, write `<!-- zhtw-guard-ignore -->` so the marker stays hidden.
 
+### AI agent hooks
+
+`zhtw-guard hook` reads a hook event from an AI agent as JSON on standard input and checks the reply text or the file that was just written. It exits with `0` and no output when clean, and with `2` and the problems on standard error when something is wrong, so the agent can fix it. Set the field names with `--text-field` and `--path-field`. See [docs/hooks.md](docs/hooks.md) for setup and examples.
+
+To check a single reply, use `text --reply`, which also checks that the first sentence is Traditional Chinese:
+
+```sh
+echo "Sure, I will fix it." | npx zhtw-guard text --reply
+```
+
 ### Dictionary data
 
 The character and term tables start from [OpenCC](https://github.com/BYVoid/OpenCC) (Apache-2.0). Its license file and attribution are in [`data/`](data/README.md). The Taiwan term table `data/tw-terms.json` is maintained in this repository, and every entry has a test.
@@ -245,8 +273,6 @@ The character and term tables start from [OpenCC](https://github.com/BYVoid/Open
 ### Planned features
 
 - GitHub Action that annotates problem lines on pull requests
-- Hooks for popular AI coding agents
-- `reply-language` rule that checks whether an agent reply starts in Traditional Chinese
 
 ### Development
 
