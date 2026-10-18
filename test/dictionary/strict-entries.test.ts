@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readTermFile, termTableFor } from "../../src/dictionary/term-table.js";
+import { checkText } from "../../src/engine/check-text.js";
+import { fixText } from "../../src/engine/fix-text.js";
+import { defaultSettings } from "../../src/engine/settings.js";
 import { ambiguousCharRule } from "../../src/rules/ambiguous-char.js";
 import { mainlandTermRule } from "../../src/rules/mainland-term.js";
 import { simplifiedCharRule } from "../../src/rules/simplified-char.js";
@@ -43,6 +46,14 @@ const STRICT_CASES: Record<string, StrictCase> = {
 const strictFile = readTermFile("tw-terms-strict.json");
 const strict = termTableFor("strict");
 const defaults = termTableFor("default");
+const strictSettings = { ...defaultSettings(), terms: strict };
+
+function expectUntouchedInStrictMode(text: string): void {
+  expect(strictTermFindings(text)).toEqual([]);
+  expect(fixWithRule(mainlandTermRule, text, { terms: strict })).toBe(text);
+  expect(checkText({ text }, strictSettings)).toEqual([]);
+  expect(fixText({ text }, strictSettings).text).toBe(text);
+}
 
 function strictTermFindings(text: string): string[] {
   return runRule(mainlandTermRule, text, { terms: strict }).map((finding) => text.slice(finding.start, finding.end));
@@ -97,6 +108,14 @@ describe("tw-terms-strict.json", () => {
   it("never flags a default protected phrase that strict mode does not override", () => {
     const kept = [...defaults.protectedPhrases].filter((phrase) => !strictFile.replacements.has(phrase));
     expect(kept.filter((phrase) => strictTermFindings(phrase).length > 0)).toEqual([]);
+  });
+
+  it.each(["大數據", "數據機"])("does not report or fix %s", (phrase) => {
+    expectUntouchedInStrictMode(`使用${phrase}處理`);
+  });
+
+  it("does not fix 交互作用 into 互動作用", () => {
+    expectUntouchedInStrictMode("藥物的交互作用");
   });
 
   it("keeps every default entry", () => {
