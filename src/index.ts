@@ -1,1 +1,8 @@
 export { VERSION } from "./version.js";
+export { RULE_IDS } from "./types.js";
+export type { Finding, Issue, Rule, RuleId, RuleSetting, Severity, TermTable, TextEdit } from "./types.js";
+export { checkText, type CheckTextOptions } from "./engine/check-text.js";
+export { fixText, type FixResult } from "./engine/fix-text.js";
+export { defaultSettings, type CheckSettings } from "./engine/settings.js";
+export { defaultTermTable, withExtraTerms, type ExtraTerms } from "./dictionary/term-table.js";
+export { ALL_RULES } from "./rules/index.js";
