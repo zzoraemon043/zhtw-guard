@@ -75,6 +75,7 @@ echo "请安装软件" | npx zhtw-guard text --fix    # 輸出修正後的文字
     "mainland-term": "warning",
     "line-ending": "off"
   },
+  "strictness": "default",
   "allow": ["某個產品名稱"],
   "extraTerms": {
     "質量": "品質",
@@ -85,8 +86,18 @@ echo "请安装软件" | npx zhtw-guard text --fix    # 輸出修正後的文字
 
 - `include`、`exclude`：要檢查與略過的路徑規則，支援 `*`、`**`、`?` 與 `{a,b}`。`node_modules` 與 `.git` 一律略過。
 - `rules`：把規則設為 `error`、`warning` 或 `off`。
+- `strictness`：用語檢查的嚴格度，`default` 或 `strict`，說明見下一節。
 - `allow`：不要回報的詞，例如引用的簡體原文或產品名稱。
 - `extraTerms`：專案自己的用語對照。只有一個建議時，`fix` 會自動替換。
+
+### 用語嚴格度
+
+| 模式 | 檢查範圍 | 自動修正 |
+| --- | --- | --- |
+| `default`（預設） | 保守詞表 `data/tw-terms.json`，只收在台灣幾乎都不會這樣用的中國大陸用語，例如「軟件」「默認」 | 只有一個建議用語時修正 | <!-- zhtw-guard-ignore -->
+| `strict` | 再加上 `data/tw-terms-strict.json`，檢查台灣軟體圈慣用的術語，例如「支持」改為「支援」、「對象」改為「物件」、「數據」改為「資料」、「消息」改為「訊息」，以及程式脈絡下的「程序」改為「程式」、指電腦檔案時的「文件」改為「檔案」 | 只修正不受上下文影響的詞，例如「發佈」改為「發布」；其餘只回報 |
+
+`strict` 模式的詞在一般文章裡也可能是正確用法，例如「說明文件」「好消息」，所以大多只回報，請自行判斷是否修改。常見的正確用法已列為保護詞，不會被回報。
 
 ### 行內忽略
 
@@ -193,6 +204,7 @@ Put a `zhtw-guard.config.json` at the project root. The tool searches from the c
     "mainland-term": "warning",
     "line-ending": "off"
   },
+  "strictness": "default",
   "allow": ["SomeProductName"],
   "extraTerms": {
     "質量": "品質",
@@ -203,8 +215,18 @@ Put a `zhtw-guard.config.json` at the project root. The tool searches from the c
 
 - `include` and `exclude`: path patterns with `*`, `**`, `?` and `{a,b}`. `node_modules` and `.git` are always skipped.
 - `rules`: set a rule to `error`, `warning` or `off`.
+- `strictness`: how strict the term check is, `default` or `strict`. See the next section.
 - `allow`: words that must not be flagged, for example quoted Simplified text or product names.
 - `extraTerms`: project-specific replacements. `fix` applies a term automatically when it has one replacement.
+
+### Term strictness
+
+| Mode | What it checks | Auto fix |
+| --- | --- | --- |
+| `default` | The conservative table `data/tw-terms.json`, which only lists Mainland terms that are almost never right in Taiwan, such as 軟件 and 默認 | When there is one suggested term | <!-- zhtw-guard-ignore -->
+| `strict` | Also `data/tw-terms-strict.json`, the terms Taiwan software teams prefer: 支持 to 支援, 對象 to 物件, 數據 to 資料, 消息 to 訊息, 程序 to 程式 in code, 文件 to 檔案 for computer files | Only terms that do not depend on context, such as 發佈 to 發布; the rest are reported only |
+
+Words in the strict table can be correct in everyday writing, for example 說明文件 or 好消息, so most of them are reported but not fixed. Common correct phrases are protected and never reported.
 
 ### Inline ignore
 
