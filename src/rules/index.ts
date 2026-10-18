@@ -4,6 +4,7 @@ import { lineEndingRule } from "./line-ending.js";
 import { mainlandTermRule } from "./mainland-term.js";
 import { mojibakeRule } from "./mojibake.js";
 import { ps1BomRule } from "./ps1-bom.js";
+import { replyLanguageRule } from "./reply-language.js";
 import { simplifiedCharRule } from "./simplified-char.js";
 
 export const ALL_RULES: readonly Rule[] = [
@@ -12,5 +13,6 @@ export const ALL_RULES: readonly Rule[] = [
   ambiguousCharRule,
   mojibakeRule,
   ps1BomRule,
-  lineEndingRule
+  lineEndingRule,
+  replyLanguageRule
 ];

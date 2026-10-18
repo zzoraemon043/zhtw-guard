@@ -17,6 +17,6 @@ describe("library API", () => {
   });
 
   it("lists every rule", () => {
-    expect(RULE_IDS).toHaveLength(6);
+    expect(RULE_IDS).toHaveLength(7);
   });
 });

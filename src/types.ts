@@ -4,7 +4,8 @@ export const RULE_IDS = [
   "ambiguous-char",
   "mojibake",
   "ps1-bom",
-  "line-ending"
+  "line-ending",
+  "reply-language"
 ] as const;
 
 export type RuleId = (typeof RULE_IDS)[number];

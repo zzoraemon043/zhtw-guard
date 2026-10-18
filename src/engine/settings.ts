@@ -5,6 +5,7 @@ export interface CheckSettings {
   rules: Readonly<Record<RuleId, RuleSetting>>;
   allow: readonly string[];
   terms: TermTable;
+  replyMode?: boolean;
 }
 
 export function defaultRuleSettings(): Record<RuleId, RuleSetting> {

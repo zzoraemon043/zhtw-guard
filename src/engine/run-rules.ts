@@ -1,7 +1,9 @@
 import { ALL_RULES } from "../rules/index.js";
-import type { Finding, Rule, Severity } from "../types.js";
+import type { Finding, Rule, RuleId, Severity } from "../types.js";
 import type { CheckSettings } from "./settings.js";
 import { createSuppressionFilter } from "./suppressions.js";
+
+const REPLY_RULE_ID: RuleId = "reply-language";
 
 export interface TextTarget {
   text: string;
@@ -17,7 +19,8 @@ export interface RuleFinding {
 export function enabledRules(settings: CheckSettings): Array<{ rule: Rule; severity: Severity }> {
   return ALL_RULES.flatMap((rule) => {
     const setting = settings.rules[rule.id];
-    return setting === "off" ? [] : [{ rule, severity: setting }];
+    const skipped = setting === "off" || (rule.id === REPLY_RULE_ID && settings.replyMode !== true);
+    return skipped ? [] : [{ rule, severity: setting }];
   });
 }
 

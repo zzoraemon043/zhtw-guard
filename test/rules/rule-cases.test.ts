@@ -41,6 +41,10 @@ const CASES: Record<RuleId, RuleCases> = {
   "line-ending": {
     flagged: [{ text: "a\r\nb\n" }, { text: "a\nb\nc\r\n" }],
     clean: [{ text: "a\nb\n" }, { text: "a\r\nb\r\n" }, { text: "a" }]
+  },
+  "reply-language": {
+    flagged: [{ text: "Sure, I will fix it." }, { text: "好的，我来修改。" }],
+    clean: [{ text: "好的，我來修改。" }, { text: "`npm test`\n測試全部通過。" }]
   }
 };
 
