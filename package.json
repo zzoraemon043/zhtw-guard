@@ -1,0 +1,51 @@
+{
+  "name": "zhtw-guard",
+  "version": "0.1.0",
+  "description": "Keep Traditional Chinese (Taiwan) text consistent in code, docs and AI output.",
+  "license": "MIT",
+  "author": "zzoraemon043",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zzoraemon043/zhtw-guard.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "zhtw-guard": "dist/cli/main.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "lint": "eslint . && tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "traditional-chinese",
+    "taiwan",
+    "zh-tw",
+    "lint",
+    "opencc"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "eslint": "^10.13.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.2",
+    "vitest": "^5.0.5"
+  }
+}
