@@ -1,6 +1,6 @@
 {
   "name": "zhtw-guard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Keep Traditional Chinese (Taiwan) text consistent in code, docs and AI output.",
   "license": "MIT",
   "author": "zzoraemon043",
