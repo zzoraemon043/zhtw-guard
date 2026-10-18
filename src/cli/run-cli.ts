@@ -14,12 +14,12 @@ async function dispatch(args: ParsedArgs, io: CliIo): Promise<number> {
     io.stdout(args.command === "help" ? HELP_TEXT : `${VERSION}\n`);
     return EXIT_CLEAN;
   }
-  const project = await loadProjectContext(io.cwd, args.configPath);
+  const project = await loadProjectContext(io.cwd, args.configPath, args.strictness);
   if (args.command === "text") {
     return checkStdin(args, project, io);
   }
   const run = args.command === "fix" ? fixFiles : checkFiles;
-  return run(args.paths, project, io, args.format);
+  return run(args, project, io);
 }
 
 export async function runCli(argv: readonly string[], io: CliIo): Promise<number> {

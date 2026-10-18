@@ -1,4 +1,6 @@
 import type { Issue } from "../types.js";
+import type { FailOn } from "./args.js";
+import { EXIT_CLEAN, EXIT_PROBLEMS } from "./io.js";
 
 export interface Summary {
   errorCount: number;
@@ -8,6 +10,11 @@ export interface Summary {
 export function summarize(issues: readonly Issue[]): Summary {
   const errorCount = issues.filter((issue) => issue.severity === "error").length;
   return { errorCount, warningCount: issues.length - errorCount };
+}
+
+export function exitCodeFor(summary: Summary, failOn: FailOn): number {
+  const failing = summary.errorCount + (failOn === "warning" ? summary.warningCount : 0);
+  return failing > 0 ? EXIT_PROBLEMS : EXIT_CLEAN;
 }
 
 export function formatIssue(issue: Issue): string {

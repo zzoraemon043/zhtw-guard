@@ -5,6 +5,7 @@ import { collectFiles, toRelativePosix } from "../../files/collect-files.js";
 import { readTextFile } from "../../files/read-text-file.js";
 import type { ProjectContext } from "../../project/context.js";
 import type { Issue } from "../../types.js";
+import type { ParsedArgs } from "../args.js";
 import type { CliIo } from "../io.js";
 import { emitIssues } from "./emit.js";
 
@@ -28,11 +29,11 @@ async function fixFile(filePath: string, displayPath: string, project: ProjectCo
   return { issues, fixedCount: fixed.fixedCount, changed };
 }
 
-export async function fixFiles(paths: readonly string[], project: ProjectContext, io: CliIo, format: "human" | "json"): Promise<number> {
+export async function fixFiles(args: ParsedArgs, project: ProjectContext, io: CliIo): Promise<number> {
   const issues: Issue[] = [];
   const changedFiles: string[] = [];
   let fixedCount = 0;
-  for (const filePath of await collectFiles(paths, io.cwd, project.selection)) {
+  for (const filePath of await collectFiles(args.paths, io.cwd, project.selection)) {
     const displayPath = toRelativePosix(io.cwd, filePath);
     const outcome = await fixFile(filePath, displayPath, project);
     issues.push(...outcome.issues);
@@ -41,8 +42,8 @@ export async function fixFiles(paths: readonly string[], project: ProjectContext
       changedFiles.push(displayPath);
     }
   }
-  if (format === "human" && fixedCount > 0) {
+  if (args.format !== "json" && fixedCount > 0) {
     io.stderr(`Fixed ${fixedCount} problem${fixedCount === 1 ? "" : "s"} in ${changedFiles.length} file${changedFiles.length === 1 ? "" : "s"}\n`);
   }
-  return emitIssues(issues, io, format, { fixedCount, changedFiles });
+  return emitIssues(issues, io, args, { fixedCount, changedFiles });
 }

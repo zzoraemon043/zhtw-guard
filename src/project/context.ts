@@ -2,8 +2,9 @@ import { dirname, resolve } from "node:path";
 import { findConfigFile, loadConfigFile } from "../config/load-config.js";
 import type { ProjectConfig } from "../config/validate-config.js";
 import { termTableFor, withExtraTerms } from "../dictionary/term-table.js";
-import { defaultRuleSettings, defaultSettings, type CheckSettings } from "../engine/settings.js";
+import { defaultRuleSettings, type CheckSettings } from "../engine/settings.js";
 import type { FileSelection } from "../files/collect-files.js";
+import type { Strictness } from "../types.js";
 
 export interface ProjectContext {
   settings: CheckSettings;
@@ -11,10 +12,6 @@ export interface ProjectContext {
 }
 
 export const DEFAULT_INCLUDE = ["**"];
-
-export function defaultProjectContext(root: string): ProjectContext {
-  return { settings: defaultSettings(), selection: { root, include: DEFAULT_INCLUDE, exclude: [] } };
-}
 
 export function projectContextFromConfig(root: string, config: ProjectConfig): ProjectContext {
   const baseTerms = termTableFor(config.strictness ?? "default");
@@ -28,11 +25,12 @@ export function projectContextFromConfig(root: string, config: ProjectConfig): P
   };
 }
 
-export async function loadProjectContext(cwd: string, configPath?: string): Promise<ProjectContext> {
+export async function loadProjectContext(cwd: string, configPath?: string, strictness?: Strictness): Promise<ProjectContext> {
   const path = configPath === undefined ? await findConfigFile(cwd) : resolve(cwd, configPath);
+  const override = strictness === undefined ? {} : { strictness };
   if (path === undefined) {
-    return defaultProjectContext(cwd);
+    return projectContextFromConfig(cwd, override);
   }
   const { config } = await loadConfigFile(path);
-  return projectContextFromConfig(dirname(path), config);
+  return projectContextFromConfig(dirname(path), { ...config, ...override });
 }
