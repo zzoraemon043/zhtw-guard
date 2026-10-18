@@ -36,7 +36,7 @@ function checkMainlandTerms({ text, terms }: RuleInput): Finding[] {
       end,
       message: `Mainland China term "${text.slice(start, end)}"`,
       suggestion: replacements.join(" / "),
-      ...(replacements.length === 1 && onlyReplacement !== undefined
+      ...(replacements.length === 1 && onlyReplacement !== undefined && !terms.reportOnly.has(phrase)
         ? { edits: [{ start, end, text: onlyReplacement }] }
         : {})
     });

@@ -78,6 +78,39 @@ describe("zhtw-guard.config.json", () => {
     expect(result.stderr).toContain('Rule "mojibake" must be "error", "warning" or "off".');
   });
 
+  it("checks Taiwan software terms only in strict mode", async () => {
+    const files = { "a.md": "這個版本不支持舊格式\n" };
+    const defaultRoot = await createProject(files);
+    const strictRoot = await createProject({ ...files, "zhtw-guard.config.json": configFile({ strictness: "strict" }) });
+    expect((await runInProject(defaultRoot, ["check"])).exitCode).toBe(0);
+    const result = await runInProject(strictRoot, ["check"]);
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain('a.md:1:6 mainland-term Mainland China term "支持" -> 支援');
+  });
+
+  it("fixes only safe strict terms", async () => {
+    const root = await createProject({
+      "zhtw-guard.config.json": configFile({ strictness: "strict" }),
+      "a.md": "發佈數據前請先保存\n"
+    });
+    expect((await runInProject(root, ["fix"])).exitCode).toBe(1);
+    expect(await readFile(join(root, "a.md"), "utf8")).toBe("發布資料前請先保存\n");
+  });
+
+  it("lets extra terms override strict terms", async () => {
+    const root = await createProject({
+      "zhtw-guard.config.json": configFile({ strictness: "strict", extraTerms: { 支持: "支援" } }),
+      "a.md": "支持\n"
+    });
+    expect((await runInProject(root, ["fix"])).exitCode).toBe(0);
+    expect(await readFile(join(root, "a.md"), "utf8")).toBe("支援\n");
+  });
+
+  it("exits with 2 for an unknown strictness", async () => {
+    const root = await createProject({ "zhtw-guard.config.json": configFile({ strictness: "loose" }) });
+    expect((await runInProject(root, ["check"])).exitCode).toBe(2);
+  });
+
   it("exits with 2 for invalid JSON", async () => {
     const root = await createProject({ "zhtw-guard.config.json": "{" });
     expect((await runInProject(root, ["check"])).exitCode).toBe(2);

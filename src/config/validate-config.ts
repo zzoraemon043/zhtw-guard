@@ -1,4 +1,4 @@
-import { RULE_IDS, type RuleId, type RuleSetting } from "../types.js";
+import { RULE_IDS, STRICTNESS_LEVELS, type RuleId, type RuleSetting, type Strictness } from "../types.js";
 import type { ExtraTerms } from "../dictionary/term-table.js";
 import { ConfigError } from "./config-error.js";
 
@@ -8,9 +8,10 @@ export interface ProjectConfig {
   rules?: Partial<Record<RuleId, RuleSetting>>;
   allow?: string[];
   extraTerms?: ExtraTerms;
+  strictness?: Strictness;
 }
 
-const KNOWN_KEYS = new Set(["$schema", "include", "exclude", "rules", "allow", "extraTerms"]);
+const KNOWN_KEYS = new Set(["$schema", "include", "exclude", "rules", "allow", "extraTerms", "strictness"]);
 
 const RULE_SETTINGS: readonly string[] = ["error", "warning", "off"];
 
@@ -59,6 +60,12 @@ function validateExtraTerms(extraTerms: unknown): void {
   }
 }
 
+function validateStrictness(strictness: unknown): void {
+  if (strictness !== undefined && !STRICTNESS_LEVELS.includes(strictness as Strictness)) {
+    throw new ConfigError('"strictness" must be "default" or "strict".');
+  }
+}
+
 export function validateConfig(value: unknown): ProjectConfig {
   if (!isRecord(value)) {
     throw new ConfigError("The config must be a JSON object.");
@@ -70,5 +77,6 @@ export function validateConfig(value: unknown): ProjectConfig {
   ["include", "exclude", "allow"].forEach((key) => expectStringArray(value, key));
   validateRules(value.rules);
   validateExtraTerms(value.extraTerms);
+  validateStrictness(value.strictness);
   return value as ProjectConfig;
 }

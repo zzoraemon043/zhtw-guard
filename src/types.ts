@@ -27,8 +27,13 @@ export interface Finding {
   edits?: TextEdit[];
 }
 
+export type Strictness = "default" | "strict";
+
+export const STRICTNESS_LEVELS: readonly Strictness[] = ["default", "strict"];
+
 export interface TermTable {
   replacements: ReadonlyMap<string, readonly string[]>;
+  reportOnly: ReadonlySet<string>;
   protectedPhrases: ReadonlySet<string>;
 }
 

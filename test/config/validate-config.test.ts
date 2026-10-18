@@ -10,7 +10,8 @@ describe("validateConfig", () => {
       exclude: ["data/**"],
       rules: { "mainland-term": "warning", mojibake: "off", "simplified-char": "error" },
       allow: ["视频号"],
-      extraTerms: { 質量: "品質", 渠道: ["通路", "管道"] }
+      extraTerms: { 質量: "品質", 渠道: ["通路", "管道"] },
+      strictness: "strict"
     };
     expect(validateConfig(config)).toEqual(config);
   });
@@ -29,7 +30,8 @@ describe("validateConfig", () => {
     ["an unknown rule", { rules: { "no-such-rule": "off" } }],
     ["an unknown severity", { rules: { mojibake: "warn" } }],
     ["a bad extra term", { extraTerms: { 質量: 1 } }],
-    ["an empty extra term list", { extraTerms: { 質量: [] } }]
+    ["an empty extra term list", { extraTerms: { 質量: [] } }],
+    ["an unknown strictness", { strictness: "loose" }]
   ])("rejects %s", (_name, config) => {
     expect(() => validateConfig(config)).toThrow(ConfigError);
   });

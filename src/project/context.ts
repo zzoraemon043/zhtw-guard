@@ -1,7 +1,7 @@
 import { dirname, resolve } from "node:path";
 import { findConfigFile, loadConfigFile } from "../config/load-config.js";
 import type { ProjectConfig } from "../config/validate-config.js";
-import { defaultTermTable, withExtraTerms } from "../dictionary/term-table.js";
+import { termTableFor, withExtraTerms } from "../dictionary/term-table.js";
 import { defaultRuleSettings, defaultSettings, type CheckSettings } from "../engine/settings.js";
 import type { FileSelection } from "../files/collect-files.js";
 
@@ -17,11 +17,12 @@ export function defaultProjectContext(root: string): ProjectContext {
 }
 
 export function projectContextFromConfig(root: string, config: ProjectConfig): ProjectContext {
+  const baseTerms = termTableFor(config.strictness ?? "default");
   return {
     settings: {
       rules: { ...defaultRuleSettings(), ...config.rules },
       allow: config.allow ?? [],
-      terms: config.extraTerms === undefined ? defaultTermTable() : withExtraTerms(defaultTermTable(), config.extraTerms)
+      terms: config.extraTerms === undefined ? baseTerms : withExtraTerms(baseTerms, config.extraTerms)
     },
     selection: { root, include: config.include ?? DEFAULT_INCLUDE, exclude: config.exclude ?? [] }
   };
