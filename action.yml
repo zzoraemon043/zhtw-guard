@@ -1,0 +1,42 @@
+name: zhtw-guard
+description: Check Traditional Chinese (Taiwan) text in pull request changes and annotate problem lines.
+author: zzoraemon043
+branding:
+  icon: check-circle
+  color: blue
+
+inputs:
+  paths:
+    description: Files or directories to check, separated by spaces or new lines. On pull requests only changed files inside them are checked.
+    required: false
+    default: "."
+  strictness:
+    description: Term strictness, "default" or "strict". Leave empty to use zhtw-guard.config.json.
+    required: false
+    default: ""
+  fail-on:
+    description: Fail the step on "error" only, or on "warning" too.
+    required: false
+    default: error
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v5
+      with:
+        node-version: 22
+    - name: Build zhtw-guard
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: |
+        npm ci --ignore-scripts --no-audit --no-fund
+        npm run build
+    - name: Check files
+      shell: bash
+      env:
+        ZHTW_GUARD_BIN: ${{ github.action_path }}/dist/cli/main.js
+        ZHTW_GUARD_PATHS: ${{ inputs.paths }}
+        ZHTW_GUARD_STRICTNESS: ${{ inputs.strictness }}
+        ZHTW_GUARD_FAIL_ON: ${{ inputs.fail-on }}
+        ZHTW_GUARD_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/action-check.sh"

@@ -114,6 +114,38 @@ const sample = "简体示例"; // zhtw-guard-ignore
 
 在 Markdown 裡可以寫成 `<!-- zhtw-guard-ignore -->`，畫面上不會顯示。
 
+### GitHub Action
+
+在 Pull Request 上只檢查有變更的檔案，並在問題所在的行加上標註。不是 Pull Request 的事件（例如推送到 main）會檢查 `paths` 指定的全部檔案。
+
+```yaml
+name: zhtw-guard
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: zzoraemon043/zhtw-guard@v0.2.0
+        with:
+          paths: docs src README.md
+          strictness: default
+          fail-on: error
+```
+
+| 參數 | 說明 | 預設值 |
+| --- | --- | --- |
+| `paths` | 要檢查的檔案或資料夾，以空白或換行分隔。Pull Request 時只檢查其中有變更的檔案 | `.` |
+| `strictness` | 用語嚴格度，`default` 或 `strict`。留空時依 `zhtw-guard.config.json` | 空白 |
+| `fail-on` | `error` 只在有錯誤時失敗，`warning` 連警告也會失敗 | `error` |
+
+這個 Action 會用 `actions/setup-node` 安裝 Node.js 22，並在 Action 的目錄裡建置 zhtw-guard。本倉庫的 [.github/workflows/zhtw-guard.yml](.github/workflows/zhtw-guard.yml) 就是用它檢查自己。
+
 ### AI 代理 hook
 
 `zhtw-guard hook` 從標準輸入讀取 AI 代理的 hook 事件 JSON，檢查回覆文字或剛寫入的檔案。沒有問題時結束代碼為 `0` 且沒有輸出；有問題時結束代碼為 `2`，問題寫到標準錯誤，讓 AI 代理自行修正。欄位名稱可以用 `--text-field`、`--path-field` 設定。設定方式與範例請見 [docs/hooks.md](docs/hooks.md)。
@@ -127,10 +159,6 @@ echo "好的，我來修改。" | npx zhtw-guard text --reply
 ### 詞庫來源
 
 字表與用語表以 [OpenCC](https://github.com/BYVoid/OpenCC)（Apache-2.0）的資料為基礎，授權檔與出處說明放在 [`data/`](data/README.md)。台灣用語表 `data/tw-terms.json` 由本專案維護，每一筆都有測試。
-
-### 規劃中的功能
-
-- GitHub Action：在 Pull Request 上標出問題行
 
 ### 開發
 
@@ -256,6 +284,38 @@ const sample = "简体示例"; // zhtw-guard-ignore
 
 In Markdown, write `<!-- zhtw-guard-ignore -->` so the marker stays hidden.
 
+### GitHub Action
+
+On pull requests the action checks only the changed files and annotates the lines with problems. Other events, such as a push to main, check everything under `paths`.
+
+```yaml
+name: zhtw-guard
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: zzoraemon043/zhtw-guard@v0.2.0
+        with:
+          paths: docs src README.md
+          strictness: default
+          fail-on: error
+```
+
+| Input | Description | Default |
+| --- | --- | --- |
+| `paths` | Files or directories to check, separated by spaces or new lines. On pull requests only changed files inside them are checked | `.` |
+| `strictness` | Term strictness, `default` or `strict`. Leave empty to use `zhtw-guard.config.json` | empty |
+| `fail-on` | `error` fails only on errors, `warning` fails on warnings too | `error` |
+
+The action installs Node.js 22 with `actions/setup-node` and builds zhtw-guard in the action directory. This repository checks itself with it in [.github/workflows/zhtw-guard.yml](.github/workflows/zhtw-guard.yml).
+
 ### AI agent hooks
 
 `zhtw-guard hook` reads a hook event from an AI agent as JSON on standard input and checks the reply text or the file that was just written. It exits with `0` and no output when clean, and with `2` and the problems on standard error when something is wrong, so the agent can fix it. Set the field names with `--text-field` and `--path-field`. See [docs/hooks.md](docs/hooks.md) for setup and examples.
@@ -269,10 +329,6 @@ echo "Sure, I will fix it." | npx zhtw-guard text --reply
 ### Dictionary data
 
 The character and term tables start from [OpenCC](https://github.com/BYVoid/OpenCC) (Apache-2.0). Its license file and attribution are in [`data/`](data/README.md). The Taiwan term table `data/tw-terms.json` is maintained in this repository, and every entry has a test.
-
-### Planned features
-
-- GitHub Action that annotates problem lines on pull requests
 
 ### Development
 
