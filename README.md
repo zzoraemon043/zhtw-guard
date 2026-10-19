@@ -4,7 +4,11 @@ Keep Traditional Chinese (Taiwan) text consistent in code, docs and AI output.
 
 [繁體中文](#繁體中文) | [English](#english)
 
-> Status: early development. The design is in [docs/spec.md](docs/spec.md).
+[![npm](https://img.shields.io/npm/v/zhtw-guard)](https://www.npmjs.com/package/zhtw-guard)
+
+![zhtw-guard checking a folder and fixing text from standard input](docs/images/check.webp)
+
+The design is in [docs/spec.md](docs/spec.md). Release notes are in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
