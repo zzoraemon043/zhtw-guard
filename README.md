@@ -93,7 +93,7 @@ echo "请安装软件" | npx zhtw-guard text --fix    # 輸出修正後的文字
 }
 ```
 
-- `include`、`exclude`：要檢查與略過的路徑規則，支援 `*`、`**`、`?` 與 `{a,b}`。`node_modules` 與 `.git` 一律略過。
+- `include`、`exclude`：要檢查與略過的路徑規則，支援 `*`、`**`、`?` 與 `{a,b}`。直接指定的檔案也會套用（專案資料夾外的檔案除外）。`node_modules` 與 `.git` 一律略過。
 - `rules`：把規則設為 `error`、`warning` 或 `off`。
 - `strictness`：用語檢查的嚴格度，`default` 或 `strict`，說明見下一節。
 - `allow`：不要回報的詞，例如引用的簡體原文或產品名稱。
@@ -263,7 +263,7 @@ Put a `zhtw-guard.config.json` at the project root. The tool searches from the c
 }
 ```
 
-- `include` and `exclude`: path patterns with `*`, `**`, `?` and `{a,b}`. `node_modules` and `.git` are always skipped.
+- `include` and `exclude`: path patterns with `*`, `**`, `?` and `{a,b}`. They also apply to files named on the command line, except files outside the project folder. `node_modules` and `.git` are always skipped.
 - `rules`: set a rule to `error`, `warning` or `off`.
 - `strictness`: how strict the term check is, `default` or `strict`. See the next section.
 - `allow`: words that must not be flagged, for example quoted Simplified text or product names.

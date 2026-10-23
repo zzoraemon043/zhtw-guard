@@ -1,5 +1,5 @@
 import { readdir, stat } from "node:fs/promises";
-import { join, relative, resolve, sep } from "node:path";
+import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createGlobMatcher } from "./glob.js";
 
 export const ALWAYS_EXCLUDED = ["**/node_modules/**", "**/.git/**"];
@@ -43,6 +43,15 @@ async function walkDirectory(directory: string, matchers: Matchers, found: strin
   }
 }
 
+function isSelectedFile(matchers: Matchers, absolute: string): boolean {
+  const relativePath = toRelativePosix(matchers.root, absolute);
+  if (matchers.isExcluded(relativePath)) {
+    return false;
+  }
+  const outsideRoot = relativePath === ".." || relativePath.startsWith("../") || isAbsolute(relativePath);
+  return outsideRoot || matchers.isIncluded(relativePath);
+}
+
 async function statOrThrow(path: string): Promise<Awaited<ReturnType<typeof stat>>> {
   try {
     return await stat(path);
@@ -63,7 +72,7 @@ export async function collectFiles(paths: readonly string[], cwd: string, select
     const info = await statOrThrow(absolute);
     if (info.isDirectory()) {
       await walkDirectory(absolute, matchers, found);
-    } else if (!matchers.isExcluded(toRelativePosix(matchers.root, absolute))) {
+    } else if (isSelectedFile(matchers, absolute)) {
       found.push(absolute);
     }
   }

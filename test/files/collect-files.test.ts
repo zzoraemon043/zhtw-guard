@@ -10,10 +10,17 @@ describe("collectFiles", () => {
     expect(files).toEqual([join(root, "a.md"), join(root, "b.md"), join(root, "src/x.ts")]);
   });
 
-  it("applies exclude but not include to explicit files", async () => {
-    const root = await createProject({ "z.txt": "", "data/y.json": "" });
+  it("applies include and exclude to explicit files inside the root", async () => {
+    const root = await createProject({ "a.md": "", "z.txt": "", "data/y.md": "" });
     const selection = { root, include: ["**/*.md"], exclude: ["data/**"] };
-    expect(await collectFiles(["z.txt", "data/y.json"], root, selection)).toEqual([join(root, "z.txt")]);
+    expect(await collectFiles(["a.md", "z.txt", "data/y.md"], root, selection)).toEqual([join(root, "a.md")]);
+  });
+
+  it("keeps explicit files outside the root", async () => {
+    const outside = await createProject({ "x.txt": "" });
+    const root = await createProject({});
+    const selection = { root, include: ["**/*.md"], exclude: [] };
+    expect(await collectFiles([join(outside, "x.txt")], root, selection)).toEqual([join(outside, "x.txt")]);
   });
 
   it("throws for a missing path", async () => {
