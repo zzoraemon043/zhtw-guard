@@ -24,6 +24,7 @@ export interface Finding {
   start: number;
   end: number;
   message: string;
+  wholeFile?: boolean;
   suggestion?: string;
   edits?: TextEdit[];
 }

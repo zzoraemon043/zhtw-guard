@@ -16,6 +16,7 @@ function checkPowerShellBom({ text, path }: RuleInput): Finding[] {
       start: 0,
       end: 0,
       message: "PowerShell script contains non-ASCII text but has no UTF-8 BOM",
+      wholeFile: true,
       suggestion: "save as UTF-8 with BOM",
       edits: [{ start: 0, end: 0, text: UTF8_BOM }]
     }

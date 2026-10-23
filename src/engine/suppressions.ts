@@ -34,7 +34,7 @@ export function findAllowedRanges(text: string, allow: readonly string[]): Range
 }
 
 function isOnIgnoredLine(finding: Finding, ignoredLines: readonly Range[]): boolean {
-  return ignoredLines.some((range) => finding.start >= range.start && finding.start <= range.end);
+  return !finding.wholeFile && ignoredLines.some((range) => finding.start >= range.start && finding.start <= range.end);
 }
 
 function isInsideAllowedWord(finding: Finding, allowed: readonly Range[]): boolean {

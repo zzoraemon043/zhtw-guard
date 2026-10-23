@@ -22,6 +22,10 @@ describe("inline ignore", () => {
     expect(rulesFound("设定 zhtw-guard-ignore\r\n設定\r\n")).toEqual([]);
   });
 
+  it("does not hide whole-file findings anchored on an ignored line", () => {
+    expect(rulesFound("a\r\nb\r\n简体 // zhtw-guard-ignore\nc\r\n")).toEqual(["3:line-ending"]);
+  });
+
   it("does not skip a line where the marker is not at the end", () => {
     expect(rulesFound("zhtw-guard-ignore 设定\n")).toEqual(["1:simplified-char"]);
   });

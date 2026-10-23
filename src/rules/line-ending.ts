@@ -31,6 +31,7 @@ function checkLineEndings({ text }: RuleInput): Finding[] {
       start: first?.start ?? 0,
       end: (first?.start ?? 0) + (first?.ending.length ?? 0),
       message: `Mixed line endings: ${crlfCount} CRLF and ${lfCount} LF`,
+      wholeFile: true,
       suggestion: `convert all to ${describe(target)}`,
       edits
     }
