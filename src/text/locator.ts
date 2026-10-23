@@ -31,9 +31,10 @@ function lineIndexAt(lineStarts: readonly number[], offset: number): number {
 
 export function createLocator(text: string): Locator {
   const lineStarts = findLineStarts(text);
+  const firstColumnStart = text.startsWith("\uFEFF") ? 1 : 0;
   return (offset) => {
     const lineIndex = lineIndexAt(lineStarts, offset);
-    const lineStart = lineStarts[lineIndex] ?? 0;
+    const lineStart = lineIndex === 0 ? Math.min(firstColumnStart, offset) : (lineStarts[lineIndex] ?? 0);
     return { line: lineIndex + 1, column: [...text.slice(lineStart, offset)].length + 1 };
   };
 }
