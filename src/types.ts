@@ -42,6 +42,7 @@ export interface TermTable {
 export interface RuleInput {
   text: string;
   path?: string;
+  legacyEncoding?: string;
   terms: TermTable;
 }
 

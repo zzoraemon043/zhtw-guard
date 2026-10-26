@@ -65,7 +65,7 @@ echo "请安装软件" | npx zhtw-guard text --fix    # 輸出修正後的文字
 | `simplified-char` | 繁體文字中的簡體字 | 只有一對一對應時修正 |
 | `mainland-term` | 中國大陸用語 | 只有一個建議用語時修正 |
 | `ambiguous-char` | 有多個繁體寫法的簡體字，例如「发」可能是「發」或「髮」 | 不修正，只回報 | <!-- zhtw-guard-ignore -->
-| `mojibake` | 疑似 cp950 或 UTF-8 解碼錯誤造成的亂碼 | 不修正，只回報 |
+| `mojibake` | 疑似 cp950 或 UTF-8 解碼錯誤造成的亂碼；整份是 Big5 或 GBK 的檔案只回報一次 | 不修正，只回報 |
 | `ps1-bom` | 含有非 ASCII 文字、但沒有 UTF-8 BOM 的 `.ps1` 檔案 | 加上 BOM |
 | `line-ending` | 同一個檔案混用 CRLF 與 LF | 統一成較多的那一種 |
 | `reply-language` | AI 代理回覆的第一句不是繁體中文（英文、簡體中文或日文）。只在 `text --reply` 與 `hook` 檢查回覆時啟用 | 不修正，只回報 |
@@ -235,7 +235,7 @@ Exit codes: `0` no errors, `1` errors found, `2` usage or configuration error. R
 | `simplified-char` | Simplified characters in Traditional text | When the mapping is one to one |
 | `mainland-term` | Mainland China vocabulary | When there is one suggested term |
 | `ambiguous-char` | Simplified characters with several Traditional forms, for example 发 to 發 or 髮 | No, report only | <!-- zhtw-guard-ignore -->
-| `mojibake` | Text that looks like cp950 or UTF-8 decoding damage | No, report only |
+| `mojibake` | Text that looks like cp950 or UTF-8 decoding damage; a whole Big5 or GBK file is reported once | No, report only |
 | `ps1-bom` | `.ps1` files with non-ASCII text and no UTF-8 BOM | Adds the BOM |
 | `line-ending` | Mixed CRLF and LF in one file | Converts to the more common one |
 | `reply-language` | An AI agent reply whose first sentence is not Traditional Chinese (English, Simplified Chinese or Japanese). Only runs for `text --reply` and for replies in `hook` | No, report only |

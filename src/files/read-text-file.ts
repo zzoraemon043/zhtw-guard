@@ -1,11 +1,12 @@
 import { readFile } from "node:fs/promises";
+import { detectLegacyEncoding } from "../encoding/detect-legacy.js";
 
 export const MAX_FILE_BYTES = 2 * 1024 * 1024;
 
 const BINARY_SNIFF_BYTES = 8000;
 
 export type ReadResult =
-  | { kind: "text"; text: string; lossless: boolean }
+  | { kind: "text"; text: string; lossless: boolean; legacyEncoding?: string }
   | { kind: "skipped"; reason: "binary" | "too-large" };
 
 export function decodeUtf8(bytes: Uint8Array): { text: string; lossless: boolean } {
@@ -24,5 +25,10 @@ export async function readTextFile(path: string): Promise<ReadResult> {
   if (bytes.subarray(0, BINARY_SNIFF_BYTES).includes(0)) {
     return { kind: "skipped", reason: "binary" };
   }
-  return { kind: "text", ...decodeUtf8(bytes) };
+  const decoded = decodeUtf8(bytes);
+  const legacy = decoded.lossless ? undefined : detectLegacyEncoding(bytes);
+  if (legacy !== undefined) {
+    return { kind: "text", text: legacy.text, lossless: false, legacyEncoding: legacy.label };
+  }
+  return { kind: "text", ...decoded };
 }

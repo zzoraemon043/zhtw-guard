@@ -25,7 +25,8 @@ async function fixFile(filePath: string, displayPath: string, project: ProjectCo
   if (changed) {
     await writeFile(filePath, fixed.text, "utf8");
   }
-  const issues = checkText({ text: fixed.text, filePath, displayPath }, project.settings);
+  const legacy = result.legacyEncoding === undefined ? {} : { legacyEncoding: result.legacyEncoding };
+  const issues = checkText({ text: fixed.text, filePath, displayPath, ...legacy }, project.settings);
   return { issues, fixedCount: fixed.fixedCount, changed };
 }
 

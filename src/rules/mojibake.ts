@@ -145,7 +145,10 @@ function findDecodingDamage(text: string, profile: Profile): Finding[] {
     .filter((finding): finding is Finding => finding !== undefined);
 }
 
-function checkMojibake({ text }: RuleInput): Finding[] {
+function checkMojibake({ text, legacyEncoding }: RuleInput): Finding[] {
+  if (legacyEncoding !== undefined) {
+    return [{ start: 0, end: 0, message: `File is not UTF-8; it looks like ${legacyEncoding}`, wholeFile: true, suggestion: "save as UTF-8" }];
+  }
   return [...findReplacementCharacters(text), ...PROFILES.flatMap((profile) => findDecodingDamage(text, profile))].sort(
     (left, right) => left.start - right.start
   );

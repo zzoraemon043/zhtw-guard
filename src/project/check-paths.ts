@@ -9,7 +9,8 @@ export async function checkPaths(paths: readonly string[], cwd: string, project:
   for (const filePath of await collectFiles(paths, cwd, project.selection)) {
     const result = await readTextFile(filePath);
     if (result.kind === "text") {
-      issues.push(...checkText({ text: result.text, filePath, displayPath: toRelativePosix(cwd, filePath) }, project.settings));
+      const legacy = result.legacyEncoding === undefined ? {} : { legacyEncoding: result.legacyEncoding };
+      issues.push(...checkText({ text: result.text, filePath, displayPath: toRelativePosix(cwd, filePath), ...legacy }, project.settings));
     }
   }
   return issues;

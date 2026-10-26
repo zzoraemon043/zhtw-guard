@@ -72,6 +72,26 @@ describe("zhtw-guard check", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toContain("big5.txt:1:1 mojibake");
   });
+
+  it("reports a Big5 file once instead of once per byte run", async () => {
+    const big5 = new Uint8Array([
+      0xbd, 0xd0, 0xa6, 0x77, 0xb8, 0xcb, 0xb3, 0x6e, 0xc5, 0xe9, 0xa1, 0x41, 0xb3, 0x6f, 0xac, 0x4f, 0xc1, 0x63, 0xc5, 0xe9, 0xa1, 0x43, 0x0a
+    ]);
+    expect(new TextDecoder("big5").decode(big5)).toBe("請安裝軟體，這是繁體。\n");
+    const root = await createProject({ "notes.txt": big5 });
+    const result = await runInProject(root, ["check"]);
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe("notes.txt:1:1 mojibake File is not UTF-8; it looks like Big5 -> save as UTF-8\n");
+  });
+
+  it("reports a GBK file once and still checks its text", async () => {
+    const gbk = new Uint8Array([0xc7, 0xeb, 0xb0, 0xb2, 0xd7, 0xb0, 0xc8, 0xed, 0xbc, 0xfe, 0x0a]);
+    expect(new TextDecoder("gbk").decode(gbk)).toBe("请安装软件\n");
+    const root = await createProject({ "notes.txt": gbk });
+    const lines = (await runInProject(root, ["check"])).stdout.trim().split("\n");
+    expect(lines.filter((line) => line.includes("mojibake"))).toEqual(["notes.txt:1:1 mojibake File is not UTF-8; it looks like GBK -> save as UTF-8"]);
+    expect(lines.some((line) => line.includes("simplified-char"))).toBe(true);
+  });
 });
 
 describe("usage errors", () => {

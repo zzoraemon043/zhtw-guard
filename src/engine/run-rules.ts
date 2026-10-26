@@ -8,6 +8,7 @@ const REPLY_RULE_ID: RuleId = "reply-language";
 export interface TextTarget {
   text: string;
   filePath?: string;
+  legacyEncoding?: string;
 }
 
 export interface RuleFinding {
@@ -28,7 +29,8 @@ export function runRule(rule: Rule, target: TextTarget, settings: CheckSettings)
   const findings = rule.check({
     text: target.text,
     terms: settings.terms,
-    ...(target.filePath === undefined ? {} : { path: target.filePath })
+    ...(target.filePath === undefined ? {} : { path: target.filePath }),
+    ...(target.legacyEncoding === undefined ? {} : { legacyEncoding: target.legacyEncoding })
   });
   return findings.length === 0 ? findings : findings.filter(createSuppressionFilter(target.text, settings.allow));
 }
