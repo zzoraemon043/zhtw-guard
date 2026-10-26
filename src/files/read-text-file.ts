@@ -17,10 +17,21 @@ export function decodeUtf8(bytes: Uint8Array): { text: string; lossless: boolean
   }
 }
 
+function utf16Encoding(bytes: Uint8Array): "utf-16le" | "utf-16be" | undefined {
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return "utf-16le";
+  }
+  return bytes[0] === 0xfe && bytes[1] === 0xff ? "utf-16be" : undefined;
+}
+
 export async function readTextFile(path: string): Promise<ReadResult> {
   const bytes = await readFile(path);
   if (bytes.length > MAX_FILE_BYTES) {
     return { kind: "skipped", reason: "too-large" };
+  }
+  const utf16 = utf16Encoding(bytes);
+  if (utf16 !== undefined) {
+    return { kind: "text", text: new TextDecoder(utf16, { ignoreBOM: true }).decode(bytes), lossless: false };
   }
   if (bytes.subarray(0, BINARY_SNIFF_BYTES).includes(0)) {
     return { kind: "skipped", reason: "binary" };

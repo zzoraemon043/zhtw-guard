@@ -73,6 +73,21 @@ describe("zhtw-guard check", () => {
     expect(result.stdout).toContain("big5.txt:1:1 mojibake");
   });
 
+  it("decodes UTF-16 files with a BOM", async () => {
+    const utf16le = new Uint8Array([0xff, 0xfe, ...[..."軟件\n"].flatMap((character) => [character.charCodeAt(0) & 0xff, character.charCodeAt(0) >> 8])]);
+    const utf16be = new Uint8Array([0xfe, 0xff, ...[..."ok\n"].flatMap((character) => [character.charCodeAt(0) >> 8, character.charCodeAt(0) & 0xff])]);
+    const root = await createProject({ "le.txt": utf16le, "be.txt": utf16be });
+    const result = await runInProject(root, ["check"]);
+    expect(result.stdout).toBe('le.txt:1:1 mainland-term Mainland China term "軟件" -> 軟體\n');
+  });
+
+  it("reports files skipped for size", async () => {
+    const root = await createProject({ "big.txt": "a".repeat(2 * 1024 * 1024 + 1) });
+    const result = await runInProject(root, ["check"]);
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr).toContain("skipped big.txt: larger than 2 MB");
+  });
+
   it("reports a Big5 file once instead of once per byte run", async () => {
     const big5 = new Uint8Array([
       0xbd, 0xd0, 0xa6, 0x77, 0xb8, 0xcb, 0xb3, 0x6e, 0xc5, 0xe9, 0xa1, 0x41, 0xb3, 0x6f, 0xac, 0x4f, 0xc1, 0x63, 0xc5, 0xe9, 0xa1, 0x43, 0x0a
