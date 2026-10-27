@@ -5,6 +5,8 @@ import type { Finding, Rule, RuleInput } from "../types.js";
 
 export const MINIMUM_HAN_SHARE = 0.3;
 
+const HAN_CHARACTERS_PER_WORD = 2;
+
 const COMMON_COMMANDS = new Set([
   "npm", "npx", "pnpm", "yarn", "node", "git", "cd", "ls", "cat", "mkdir", "rm", "cp", "mv",
   "python", "python3", "pip", "cargo", "go", "make", "docker", "kubectl", "curl", "bash", "sh", "pwsh"
@@ -40,7 +42,8 @@ export function describeLanguageProblem(profile: ScriptProfile): string | undefi
   if (profile.kanaCount > 0) {
     return "Japanese";
   }
-  if (profile.hanCount / (profile.hanCount + profile.latinWordCount) < MINIMUM_HAN_SHARE) {
+  const hanWords = profile.hanCount / HAN_CHARACTERS_PER_WORD;
+  if (hanWords / (hanWords + profile.latinWordCount) < MINIMUM_HAN_SHARE) {
     return "English";
   }
   return profile.simplifiedCount > 0 ? "Simplified Chinese" : undefined;

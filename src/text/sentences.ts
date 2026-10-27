@@ -4,7 +4,7 @@ export interface Sentence {
   text: string;
 }
 
-const SENTENCE_END = /[。！？；!?;\n]|\.(?=\s|$)/gu;
+const SENTENCE_END = /[。！？；!?;\n]|\.(?=[*_)\]"'”’]*(?:\s|$))/gu;
 
 function trimmed(text: string, start: number, end: number): Sentence | undefined {
   const raw = text.slice(start, end);

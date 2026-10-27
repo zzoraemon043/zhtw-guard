@@ -15,7 +15,13 @@ const FLAGGED: ReadonlyArray<readonly [string, string, string]> = [
   ["an English top-level heading", "# Changes\n\n這次修改了三個檔案。", "English"],
   ["mostly English with one Chinese word", "I fixed the parser and updated all the tests 了", "English"],
   ["Simplified Chinese after a command", "npm run build\n构建完成。", "Simplified Chinese"],
-  ["English after inline code", "`zhtw-guard check` reports nothing now.", "English"]
+  ["English after inline code", "`zhtw-guard check` reports nothing now.", "English"],
+  ["a bold English sentence before Chinese", "**Done.** 已完成。", "English"],
+  [
+    "an English sentence with a few Chinese characters",
+    "我已經修正了 the authentication bug in the login flow and also refactored the session handling module.",
+    "English"
+  ]
 ];
 
 const CLEAN: ReadonlyArray<readonly [string, string]> = [
