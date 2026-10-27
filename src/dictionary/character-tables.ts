@@ -12,3 +12,23 @@ export function ambiguousCharacters(): ReadonlyMap<string, readonly string[]> {
   ambiguousCache ??= new Map(Object.entries(readDataFile<Record<string, string[]>>("ambiguous-chars.json")));
   return ambiguousCache;
 }
+
+interface SimplifiedPhraseFile {
+  phrases: Record<string, string>;
+  protected: string[];
+}
+
+export interface SimplifiedPhrases {
+  phrases: ReadonlyMap<string, string>;
+  protectedPhrases: ReadonlySet<string>;
+}
+
+let phraseCache: SimplifiedPhrases | undefined;
+
+export function simplifiedPhrases(): SimplifiedPhrases {
+  if (phraseCache === undefined) {
+    const file = readDataFile<SimplifiedPhraseFile>("simplified-phrases.json");
+    phraseCache = { phrases: new Map(Object.entries(file.phrases)), protectedPhrases: new Set(file.protected) };
+  }
+  return phraseCache;
+}

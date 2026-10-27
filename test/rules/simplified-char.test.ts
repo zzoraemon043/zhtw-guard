@@ -26,8 +26,8 @@ describe("simplified-char", () => {
   });
 
   it("does not flag characters with several Traditional forms", () => {
-    expect(runRule(simplifiedCharRule, "头发")).toHaveLength(1);
-    expect(flaggedTexts(simplifiedCharRule, "头发")).toEqual(["头"]);
+    expect(runRule(simplifiedCharRule, "长发")).toHaveLength(1);
+    expect(flaggedTexts(simplifiedCharRule, "长发")).toEqual(["长"]);
   });
 
   it("does not flag ASCII text", () => {

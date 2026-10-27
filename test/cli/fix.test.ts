@@ -13,10 +13,10 @@ describe("zhtw-guard fix", () => {
   });
 
   it("reports what it cannot fix and exits with 1", async () => {
-    const root = await createProject({ "a.md": "头发与视频\n" });
+    const root = await createProject({ "a.md": "长发与视频\n" });
     const result = await runInProject(root, ["fix"]);
     expect(result.exitCode).toBe(1);
-    expect(await readFile(join(root, "a.md"), "utf8")).toBe("頭发與視頻\n");
+    expect(await readFile(join(root, "a.md"), "utf8")).toBe("長发與視頻\n");
     expect(result.stdout).toContain("ambiguous-char");
     expect(result.stdout).toContain("mainland-term");
   });

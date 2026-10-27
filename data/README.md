@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | `simplified-chars.json` | Simplified characters with exactly one Traditional (Taiwan) form | Generated from OpenCC |
 | `ambiguous-chars.json` | Simplified characters with several Traditional (Taiwan) forms | Generated from OpenCC |
+| `simplified-phrases.json` | Phrases that settle characters left out of the tables above, such as 后来 or 里面, plus Traditional words they must not touch | Maintained by hand |
 | `tw-terms.json` | Mainland China terms and their Taiwan replacements, plus protected phrases that must not be flagged | Seeded from OpenCC, maintained by hand |
 | `tw-terms-strict.json` | Terms that Taiwan software teams prefer, checked only with `"strictness": "strict"` | Maintained by hand |
 | `opencc/` | Unmodified OpenCC dictionary files and the OpenCC license | OpenCC |

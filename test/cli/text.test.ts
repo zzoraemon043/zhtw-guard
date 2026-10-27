@@ -18,10 +18,10 @@ describe("zhtw-guard text", () => {
   });
 
   it("prints fixed text and remaining issues as JSON", async () => {
-    const result = await runInProject(process.cwd(), ["text", "--fix", "--format", "json"], "头发");
+    const result = await runInProject(process.cwd(), ["text", "--fix", "--format", "json"], "长发");
     const report = JSON.parse(result.stdout) as { output: string; fixedCount: number; errorCount: number };
     expect(result.exitCode).toBe(1);
-    expect(report).toMatchObject({ output: "頭发", fixedCount: 1, errorCount: 1 });
+    expect(report).toMatchObject({ output: "長发", fixedCount: 1, errorCount: 1 });
   });
 
   it("uses --path for file-specific rules and output", async () => {
