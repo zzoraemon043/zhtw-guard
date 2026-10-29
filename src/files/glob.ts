@@ -1,11 +1,47 @@
-const REGEX_SPECIAL = /[.+^$()|[\]\\]/u;
+const REGEX_SPECIAL = /[.+^$()|[\]\\}]/u;
+
+function findClosingBrace(pattern: string, index: number): number {
+  let depth = 0;
+  for (let position = index; position < pattern.length; position += 1) {
+    if (pattern[position] === "{") {
+      depth += 1;
+    } else if (pattern[position] === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        return position;
+      }
+    }
+  }
+  return -1;
+}
+
+function splitTopLevel(body: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const character of body) {
+    if (character === "," && depth === 0) {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+    if (character === "{") {
+      depth += 1;
+    } else if (character === "}") {
+      depth -= 1;
+    }
+    current += character;
+  }
+  parts.push(current);
+  return parts;
+}
 
 function translateBraces(pattern: string, index: number): { source: string; next: number } {
-  const close = pattern.indexOf("}", index);
+  const close = findClosingBrace(pattern, index);
   if (close === -1) {
     return { source: "\\{", next: index + 1 };
   }
-  const alternatives = pattern.slice(index + 1, close).split(",").map((part) => globBody(part));
+  const alternatives = splitTopLevel(pattern.slice(index + 1, close)).map((part) => globBody(part));
   return { source: `(?:${alternatives.join("|")})`, next: close + 1 };
 }
 

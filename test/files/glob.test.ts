@@ -50,3 +50,17 @@ describe("createGlobMatcher", () => {
     expect(createGlobMatcher([])("README.md")).toBe(false);
   });
 });
+
+describe("globToRegExp braces", () => {
+  it("supports nested brace alternatives", () => {
+    const pattern = globToRegExp("{a,{b,c}}.md");
+    expect(pattern.test("a.md")).toBe(true);
+    expect(pattern.test("c.md")).toBe(true);
+    expect(pattern.test("d.md")).toBe(false);
+  });
+
+  it("treats a lone } and an unclosed { as literal characters", () => {
+    expect(globToRegExp("a}b").test("a}b")).toBe(true);
+    expect(globToRegExp("a{b").test("a{b")).toBe(true);
+  });
+});
