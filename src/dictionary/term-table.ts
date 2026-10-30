@@ -65,5 +65,14 @@ export function withExtraTerms(base: TermTable, extraTerms: ExtraTerms): TermTab
   const replacements = new Map(
     Object.entries(extraTerms).map(([term, value]) => [term, typeof value === "string" ? [value] : value] as const)
   );
-  return mergeTermTables(base, { replacements, reportOnly: new Set(), protectedPhrases: new Set() });
+  const merged = mergeTermTables(base, { replacements, reportOnly: new Set(), protectedPhrases: new Set() });
+  const protectedPhrases = new Set(merged.protectedPhrases);
+  for (const [term, values] of replacements) {
+    for (const value of values) {
+      if (value.includes(term)) {
+        protectedPhrases.add(value);
+      }
+    }
+  }
+  return { ...merged, protectedPhrases };
 }

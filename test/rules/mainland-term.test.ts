@@ -50,6 +50,13 @@ describe("mainland-term", () => {
     expect(runRule(mainlandTermRule, "質量")).toEqual([]);
   });
 
+  it("keeps a replacement that contains its own term from being flagged again", () => {
+    const terms = withExtraTerms(defaultTermTable(), { 簡訊: "簡訊驗證", 驗證碼: "驗證碼" });
+    expect(fixWithRule(mainlandTermRule, "收簡訊啦", { terms })).toBe("收簡訊驗證啦");
+    expect(runRule(mainlandTermRule, "收簡訊驗證啦", { terms })).toEqual([]);
+    expect(runRule(mainlandTermRule, "驗證碼", { terms })).toEqual([]);
+  });
+
   it("lets extra terms override protected phrases", () => {
     const terms = withExtraTerms(defaultTermTable(), { 通過: "透過" });
     expect(fixWithRule(mainlandTermRule, "通過", { terms })).toBe("透過");
