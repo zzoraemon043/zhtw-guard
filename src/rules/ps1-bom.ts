@@ -3,8 +3,11 @@ import type { Finding, Rule, RuleInput } from "../types.js";
 
 export const UTF8_BOM = "\uFEFF";
 
+const powerShellExtensions = [".ps1", ".psm1", ".psd1"];
+
 function isPowerShellScript(path: string | undefined): boolean {
-  return path?.toLowerCase().endsWith(".ps1") ?? false;
+  const lowerPath = path?.toLowerCase();
+  return lowerPath !== undefined && powerShellExtensions.some((extension) => lowerPath.endsWith(extension));
 }
 
 function checkPowerShellBom({ text, path }: RuleInput): Finding[] {
